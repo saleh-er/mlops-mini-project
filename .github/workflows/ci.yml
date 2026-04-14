@@ -2,7 +2,7 @@ name: MLOps Pipeline
 
 on:
   push:
-    branches: [ "feature/*", "develop" ]
+    branches: [ "main","feature/*", "develop" ]
 
 jobs:
   # Étape 1 : Entraînement (pour tout le monde)
@@ -24,7 +24,7 @@ jobs:
   # Étape 2 : Construction et Publication Docker (Uniquement sur develop)
   build-and-push:
     needs: train-and-test
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
