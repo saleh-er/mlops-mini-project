@@ -30,5 +30,5 @@
 
 ### 1. Cloner le projet
 ```bash
-git clone <URL_DE_TON_REPO>
+git clone https://github.com/saleh-er/mlops-mini-project.git
 cd mlops-mini-project
