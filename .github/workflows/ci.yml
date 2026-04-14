@@ -13,7 +13,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.11" # <--- CHANGÉ de 3.9 à 3.11 pour la compatibilité
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -37,5 +37,6 @@ jobs:
           
       - name: Build and Push Docker image
         run: |
+          # Utilisation de ton nom d'utilisateur Docker Hub dynamiquement
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/mobile-api:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/mobile-api:latest
