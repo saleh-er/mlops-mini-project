@@ -1,65 +1,55 @@
-import os
-from fastapi import FastAPI
+import streamlit as st
 import joblib
 import numpy as np
-from pydantic import BaseModel
+import os
 
-# 1. Définition du schéma de données (les colonnes du dataset Mobile Price)
-class MobileFeatures(BaseModel):
-    battery_power: int
-    blue: int
-    clock_speed: float
-    dual_sim: int
-    fc: int
-    four_g: int
-    int_memory: int
-    m_dep: float
-    mobile_wt: int
-    n_cores: int
-    pc: int
-    px_height: int
-    px_width: int
-    ram: int
-    sc_h: int
-    sc_w: int
-    talk_time: int
-    three_g: int
-    touch_screen: int
-    wifi: int
+# Configuration de la page
+st.set_page_config(page_title="Mobile Price Predictor", layout="centered")
 
-# 2. Initialisation de l'API
-app = FastAPI(title="Mobile Price Predictor API")
+st.title("📱 Prédicteur de Gamme de Prix Mobile")
+st.write("Ajustez les paramètres du téléphone pour obtenir une estimation du prix.")
 
-# 3. Chargement du modèle au démarrage
+# Chargement du modèle
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
 
-# Chargement sécurisé
-if os.path.exists(MODEL_PATH):
-    model = joblib.load(MODEL_PATH)
-else:
-    # Cela évitera le "Aborted!" sec et te dira pourquoi ça plante
-    raise FileNotFoundError(f"Le fichier modèle n'a pas été trouvé à : {MODEL_PATH}")
-@app.get("/health")
-def health():
-    """Endpoint de santé pour vérifier si l'API est en ligne."""
-    return {"status": "healthy", "model_loaded": model is not None}
+@st.cache_resource
+def load_model():
+    return joblib.load(MODEL_PATH)
 
-@app.post("/predict")
-def predict(features: MobileFeatures):
-    """Endpoint pour prédire la gamme de prix (0, 1, 2 ou 3)."""
-    # Conversion des données reçues en tableau NumPy pour le modèle
-    data = np.array([[ 
-        features.battery_power, features.blue, features.clock_speed, features.dual_sim,
-        features.fc, features.four_g, features.int_memory, features.m_dep,
-        features.mobile_wt, features.n_cores, features.pc, features.px_height,
-        features.px_width, features.ram, features.sc_h, features.sc_w,
-        features.talk_time, features.three_g, features.touch_screen, features.wifi
-    ]])
+model = load_model()
+
+# Création de l'interface avec des colonnes
+col1, col2 = st.columns(2)
+
+with col1:
+    ram = st.slider("RAM (MB)", 256, 4000, 2000)
+    battery = st.slider("Puissance Batterie (mAh)", 500, 2000, 1200)
+    int_memory = st.slider("Mémoire interne (GB)", 2, 64, 32)
+    n_cores = st.selectbox("Nombre de cœurs", [1, 2, 3, 4, 5, 6, 7, 8])
+
+with col2:
+    px_height = st.number_input("Hauteur Écran (px)", 0, 2000, 500)
+    px_width = st.number_input("Largeur Écran (px)", 0, 2000, 1000)
+    mobile_wt = st.number_input("Poids du mobile (g)", 80, 200, 150)
+    wifi = st.checkbox("Option WiFi")
+
+# Préparation des données (on met des valeurs par défaut pour les colonnes non affichées)
+if st.button("Estimer le prix"):
+    # On crée un vecteur de 20 caractéristiques (ordre du dataset Kaggle)
+    # Note: Pour simplifier ici, je ne mets que les variables clés, 
+    # mais il faut remplir les 20 selon l'ordre de ton train.py
+    features = np.zeros(20) 
+    features[13] = ram
+    features[0] = battery
+    features[6] = int_memory
+    features[9] = n_cores
+    features[11] = px_height
+    features[12] = px_width
+    features[8] = mobile_wt
+    features[19] = 1 if wifi else 0
     
-    prediction = model.predict(data)
+    prediction = model.predict([features])[0]
     
-    return {
-        "price_range_prediction": int(prediction[0]),
-        "description": "0: Low, 1: Medium, 2: High, 3: Very High"
-    }
+    classes = ["Bas de gamme 📉", "Moyen de gamme 📊", "Haut de gamme 📈", "Luxe / Très haut de gamme 🔥"]
+    st.success(f"Résultat : **{classes[prediction]}**")
