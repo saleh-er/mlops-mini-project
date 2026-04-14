@@ -13,7 +13,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11" # <--- CHANGÉ de 3.9 à 3.11 pour la compatibilité
+          python-version: "3.11" 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt

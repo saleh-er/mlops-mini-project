@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 import joblib
 import numpy as np
@@ -30,9 +31,15 @@ class MobileFeatures(BaseModel):
 app = FastAPI(title="Mobile Price Predictor API")
 
 # 3. Chargement du modèle au démarrage
-# Note : Assure-tu d'avoir exécuté train.py avant pour générer ce fichier !
-model = joblib.load("app/model.pkl")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
 
+# Chargement sécurisé
+if os.path.exists(MODEL_PATH):
+    model = joblib.load(MODEL_PATH)
+else:
+    # Cela évitera le "Aborted!" sec et te dira pourquoi ça plante
+    raise FileNotFoundError(f"Le fichier modèle n'a pas été trouvé à : {MODEL_PATH}")
 @app.get("/health")
 def health():
     """Endpoint de santé pour vérifier si l'API est en ligne."""
