@@ -7,7 +7,8 @@
 ![CI/CD](https://img.shields.io/badge/GitHub%20Actions-Workflows-2088FF.svg)
 
 > Un pipeline MLOps complet : de l'entraînement d'un modèle Random Forest sur le dataset **Mobile Price Classification** (Kaggle) jusqu'au déploiement d'une interface interactive via Docker.
-
+## Aperçu de l'application
+![Capture d'écran de l'application](app_screenshot.png)
 ---
 
 ## 🎯 Objectifs du Projet
