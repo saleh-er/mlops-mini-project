@@ -6,8 +6,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 def train():
-    # 1. Chargement des données Kaggle
-    # Assure-toi que le fichier est bien dans data/train.csv
+    # Détermine le chemin du dossier racine du projet
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DATA_PATH = os.path.join(BASE_DIR, "data", "train.csv")
+    
+    # Chargement sécurisé
+    if not os.path.exists(DATA_PATH):
+        raise FileNotFoundError(f"Le fichier est introuvable ici : {DATA_PATH}")
     df = pd.read_csv("data/train.csv")
     
     # Séparation Features (X) et Target (y)
