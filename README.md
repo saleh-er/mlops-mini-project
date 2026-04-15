@@ -20,7 +20,7 @@
 ---
 
 ## 🛠️ Stack Technique
-* **Data** : Scikit-learn, Pandas, Numpy.
+* **Data** : Scikit-learn, Pandas, Numpy, Streamlit.
 * **Interface** : Streamlit (Web UI).
 * **DevOps** : Docker, Docker Hub.
 * **Automatisation** : GitHub Actions.
